@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fortune Teller — x402 on Solana
 
-## Getting Started
+Pay 1 SOL. Get your AI-generated fortune. That's it.
 
-First, run the development server:
+A web app that gates access to an AI fortune telling service behind a real Solana payment. Built with the x402 payment pattern — the server returns `402 Payment Required` until a valid on-chain transaction is verified.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## What It Does
+
+1. User connects their Phantom wallet
+2. Sends 1 SOL to the receiver wallet (devnet)
+3. Transaction signature is attached to the API request as proof of payment
+4. Server verifies the payment on-chain — if not valid, returns `402`
+5. Once verified, GPT generates a personalized fortune based on birth details
+6. Fortune is displayed to the user
+
+---
+
+## Tech Stack
+
+| Layer | Tech |
+|---|---|
+| Framework | Next.js 14 (App Router) |
+| Wallet | Phantom via `@solana/wallet-adapter` |
+| Blockchain | Solana Devnet |
+| Payment Pattern | x402 — HTTP 402 + on-chain tx verification |
+| AI | OpenAI GPT-3.5 |
+| Styling | Tailwind CSS + inline styles |
+
+---
+
+## How the x402 Pattern Works
+
+x402 is an HTTP payment protocol. The standard `402 Payment Required` status code — which has been reserved since HTTP/1.1 but rarely used — is repurposed here as a real payment gate.
+
+```
+Client                        Server
+  |                              |
+  |-- POST /api/fortune -------->|
+  |                              |-- no txSig? --> 402 Payment Required
+  |
+  | [user pays 1 SOL on-chain]
+  |
+  |-- POST /api/fortune -------->|
+  |   + txSig in body            |-- verify tx on Solana devnet
+  |                              |-- confirmed + correct amount?
+  |                              |-- call GPT --> return fortune
+  |<-- 200 { fortune } ----------|
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The transaction signature IS the payment proof. No session tokens, no accounts, no database.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project Structure
 
-## Learn More
+```
+fortune-teller/
+├── app/
+│   ├── layout.tsx              # Root layout with wallet providers
+│   ├── providers.tsx           # Solana wallet adapter setup
+│   ├── globals.css             # Base styles
+│   ├── globals.d.ts            # CSS module type declaration
+│   ├── page.tsx                # Main UI — all steps in one page
+│   └── api/
+│       └── fortune/
+│           └── route.ts        # x402 verification + GPT call
+├── .env.local                  # Secrets (never committed)
+├── .gitignore
+└── tsconfig.json
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Limitations
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- No persistent accounts — payment is per session, refresh = pay again
+- Devnet only by default — no real money involved
+- No refunds — blockchain payments are irreversible
+- Fortune is AI-generated for entertainment only
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## License
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+MIT
