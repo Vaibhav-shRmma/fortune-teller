@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { Connection, clusterApiUrl } from '@solana/web3.js'
 
-const REQUIRED_LAMPORTS = 1_000_000_000
+const REQUIRED_LAMPORTS = 100_000_000
 const RECEIVER = process.env.NEXT_PUBLIC_RECEIVER_WALLET!
 
 export async function POST(req: NextRequest) {
@@ -47,7 +47,7 @@ export async function POST(req: NextRequest) {
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
     const completion = await openai.chat.completions.create({
-      model: 'gpt-3.5-turbo',
+      model: 'gpt-4.1-mini',
       messages: [{
         role: 'user',
         content: `You are a mystical fortune teller. Give a personal, vivid, 3-paragraph fortune for:
