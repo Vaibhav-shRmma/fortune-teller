@@ -9,7 +9,7 @@ A web app that gates access to an AI fortune telling service behind a real Solan
 ## What It Does
 
 1. User connects their Phantom wallet
-2. Sends 1 SOL to the receiver wallet (devnet)
+2. Sends 0.1 SOL to the receiver wallet (devnet)
 3. Transaction signature is attached to the API request as proof of payment
 4. Server verifies the payment on-chain — if not valid, returns `402`
 5. Once verified, GPT generates a personalized fortune based on birth details
