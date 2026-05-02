@@ -1,6 +1,6 @@
 # Fortune Teller — x402 on Solana
 
-Pay 1 SOL. Get your AI-generated fortune. That's it.
+Pay 0.1 SOL. Get your AI-generated fortune. That's it.
 
 A web app that gates access to an AI fortune telling service behind a real Solana payment. Built with the x402 payment pattern — the server returns `402 Payment Required` until a valid on-chain transaction is verified.
 
